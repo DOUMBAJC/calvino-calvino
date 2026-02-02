@@ -3,12 +3,6 @@
     "description": "Squelette de projet pour le framework Calvino",
     "type": "project",
     "license": "MIT",
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../calvino-framework"
-        }
-    ],
     "require": {
         "php": "^8.2",
         "calvino/framework": "*"
