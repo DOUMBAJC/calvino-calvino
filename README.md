@@ -248,7 +248,7 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 
 ## 👨‍💻 Auteur
 
-**DOUMBIA Jean Calvain**
+**DOUMBA Jean Calvain**
 
 - GitHub: [@DOUMBAJC](https://github.com/DOUMBAJC)
 

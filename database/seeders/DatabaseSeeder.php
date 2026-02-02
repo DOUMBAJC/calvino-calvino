@@ -13,14 +13,7 @@ class DatabaseSeeder
      * @var array
      */
     protected array $seeders = [
-        UserSeeder::class,
-        CategorySeeder::class,
-        ManufacturerSeeder::class,
-        ProductSeeder::class,
-        CustomerSeeder::class,
-        SaleSeeder::class,
-        TransactionSeeder::class,
-        NotificationSeeder::class
+        UserSeeder::class
     ];
 
     /**
@@ -35,16 +28,6 @@ class DatabaseSeeder
         $pdo->exec("SET FOREIGN_KEY_CHECKS=0");
         
         try {
-            // Vider d'abord les tables avec des dépendances
-            $pdo->exec("TRUNCATE TABLE notifications");
-            $pdo->exec("TRUNCATE TABLE transactions");
-            $pdo->exec("TRUNCATE TABLE sale_details");
-            $pdo->exec("TRUNCATE TABLE sales");
-            $pdo->exec("TRUNCATE TABLE products");
-            $pdo->exec("TRUNCATE TABLE categories");
-            $pdo->exec("TRUNCATE TABLE manufacturers");
-            $pdo->exec("TRUNCATE TABLE customers");
-            
             // Exécuter les seeders dans l'ordre
             foreach ($this->seeders as $seeder) {
                 echo "Exécution du seeder: " . $seeder . "\n";

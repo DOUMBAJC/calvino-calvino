@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use Calvino\Models\User;
 
 /**
  * Seeder pour la table users
@@ -18,44 +18,26 @@ class UserSeeder
     {
         // Vider la table avant le seeding (sauf l'admin par défaut)
         $pdo = require __DIR__ . '/../connection.php';
-        $pdo->exec("DELETE FROM users WHERE email != 'admin@pharmacie.com'");
+        $pdo->exec("DELETE FROM users WHERE email != 'admin@example.com'");
         
         // Créer des utilisateurs de test
         $users = [
             [
-                'name' => 'Admin',
-                'email' => 'admin@pharmacie.com',
-                'password' => password_hash('Pa$$w0rd!', PASSWORD_BCRYPT, ['cost' => 12]),
+                'name' => 'Admin User',
+                'email' => 'admin@example.com',
+                'password' => password_hash('password', PASSWORD_BCRYPT, ['cost' => 12]),
                 'role' => 'admin',
-                'phone' => '0123456789',
-                'address' => '123 Rue Principale',
+                'phone' => '+237622037000',
+                'address' => '123 Main Street',
                 'is_active' => 1
             ],
             [
-                'name' => 'Manager',
-                'email' => 'manager@pharmacie.com',
-                'password' => password_hash('Pa$$w0rd!', PASSWORD_BCRYPT, ['cost' => 12]),
-                'role' => 'manager',
-                'phone' => '0123456789',
-                'address' => '123 Rue Principale',
-                'is_active' => 1
-            ],
-            [
-                'name' => 'Pharmacien',
-                'email' => 'pharmacist@pharmacie.com',
-                'password' => password_hash('Pa$$w0rd!', PASSWORD_BCRYPT, ['cost' => 12]),
-                'role' => 'pharmacist',
-                'phone' => '0123456788',
-                'address' => '456 Avenue Secondaire',
-                'is_active' => 1
-            ],
-            [
-                'name' => 'Caissier',
-                'email' => 'cashier@pharmacie.com',
-                'password' => password_hash('Pa$$w0rd!', PASSWORD_BCRYPT, ['cost' => 12]),
-                'role' => 'cashier',
-                'phone' => '0123456787',
-                'address' => '789 Boulevard Tertiaire',
+                'name' => 'Demo User',
+                'email' => 'user@example.com',
+                'password' => password_hash('password', PASSWORD_BCRYPT, ['cost' => 12]),
+                'role' => 'user',
+                'phone' => '+1234567891',
+                'address' => '456 Second Avenue',
                 'is_active' => 1
             ]
         ];
