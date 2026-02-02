@@ -7,3 +7,4 @@
 /public/storage/
 .phpunit.result.cache
 php_errors.log
+/framework-repo/

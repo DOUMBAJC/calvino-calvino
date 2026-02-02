@@ -224,7 +224,7 @@ composer calvino make:migration create_table_name
 
 # Aide
 composer calvino help
-composer calvino list
+composer calvino route:list
 ```
 
 ## 📚 Documentation
@@ -248,7 +248,7 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 
 ## 👨‍💻 Auteur
 
-**DOUMBIA Jean-Calvino**
+**DOUMBIA Jean Calvain**
 
 - GitHub: [@DOUMBAJC](https://github.com/DOUMBAJC)
 
