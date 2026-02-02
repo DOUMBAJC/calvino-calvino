@@ -1,0 +1,115 @@
+<?php
+
+return [
+    'success' => 'Opération réussie',
+    'created' => 'Ressource créée avec succès',
+    'updated' => 'Ressource mise à jour avec succès',
+    'deleted' => 'Ressource supprimée avec succès',
+    'not_found' => 'Ressource non trouvée',
+    'invalid_credentials' => 'Identifiants invalides',
+    'account_blocked' => 'Compte bloqué ou suspendu. Veuillez contacter l\'administrateur.',
+    'unauthorized' => 'Non autorisé',
+    'forbidden' => 'Accès interdit',
+    'validation_failed' => 'La validation a échoué',
+    'validation_no_data' => 'Aucune donnée valide n\'a été fournie',
+    'server_error' => 'Erreur serveur',
+    
+    'login_success' => 'Connexion réussie',
+    'logout_success' => 'Déconnexion réussie',
+    
+    'session' => [
+        'list_success' => 'Liste des sessions récupérée avec succès',
+        'logout_success' => 'Session déconnectée avec succès',
+        'logout_others_success' => 'Autres sessions déconnectées avec succès',
+        'not_found' => 'Session non trouvée',
+        'invalid' => 'Session invalide ou expirée',
+        'current' => 'Session courante',
+        'current_not_found' => 'Session courante non trouvée',
+    ],
+    
+    'user' => [
+        'created' => 'Utilisateur créé avec succès',
+        'updated' => 'Utilisateur mis à jour avec succès',
+        'deleted' => 'Utilisateur supprimé avec succès',
+        'not_found' => 'Utilisateur non trouvé',
+    ],
+    
+    'product' => [
+        'created' => 'Produit créé avec succès',
+        'updated' => 'Produit mis à jour avec succès',
+        'deleted' => 'Produit supprimé avec succès',
+        'not_found' => 'Produit non trouvé',
+        'low_stock' => 'Stock bas pour le produit',
+        'out_of_stock' => 'Rupture de stock pour le produit',
+        'expired' => 'Produit expiré',
+        'about_to_expire' => 'Produit proche de la date d\'expiration',
+    ],
+
+    'customer' => [
+        'created' => 'Client créé avec succès',
+        'updated' => 'Client mis à jour avec succès',
+        'deleted' => 'Client supprimé avec succès',
+        'not_found' => 'Client non trouvé',
+    ],
+    'manufacturer' => [
+        'created' => 'Fabricant créé avec succès',
+        'updated' => 'Fabricant mis à jour avec succès',
+        'deleted' => 'Fabricant supprimé avec succès',
+        'not_found' => 'Fabricant non trouvé',
+    ],
+    'sale' => [
+        'created' => 'Vente créée avec succès',
+        'updated' => 'Vente mise à jour avec succès',
+        'deleted' => 'Vente supprimée avec succès',
+        'not_found' => 'Vente non trouvée',
+        'invoice_generated' => 'Facture générée avec succès',
+        'payment_received' => 'Paiement reçu avec succès',
+        'payment_pending' => 'Paiement en attente',
+        'invalid_products' => 'Produits invalides dans la vente',
+    ],
+    'category' => [
+        'created' => 'Catégorie créée avec succès',
+        'updated' => 'Catégorie mise à jour avec succès',
+        'deleted' => 'Catégorie supprimée avec succès',
+        'not_found' => 'Catégorie non trouvée',
+    ],
+    'delivery' => [
+        'created' => 'Livraison créée avec succès',
+        'updated' => 'Livraison mise à jour avec succès',
+        'deleted' => 'Livraison supprimée avec succès',
+        'not_found' => 'Livraison non trouvée',
+        'status_updated' => 'Statut de la livraison mis à jour avec succès',
+        'pending' => 'En attente',
+        'processing' => 'En cours de traitement',
+        'shipped' => 'Expédiée',
+        'delivered' => 'Livrée',
+        'cancelled' => 'Annulée',
+    ],
+    'delivery_detail' => [
+        'created' => 'Détail de livraison créé avec succès',
+        'updated' => 'Détail de livraison mis à jour avec succès',
+        'deleted' => 'Détail de livraison supprimé avec succès',
+        'not_found' => 'Détail de livraison non trouvé',
+    ],
+    'notification' => [
+        'created' => 'Notification créée avec succès',
+        'updated' => 'Notification mise à jour avec succès',
+        'deleted' => 'Notification supprimée avec succès',
+        'not_found' => 'Notification non trouvée',
+        'marked_as_read' => 'Notification marquée comme lue',
+        'marked_as_unread' => 'Notification marquée comme non lue',
+    ],
+    'dashboard' => [
+        'data_loaded' => 'Données du tableau de bord chargées avec succès',
+        'stats_updated' => 'Statistiques mises à jour avec succès',
+        'sales_report' => 'Rapport des ventes généré avec succès',
+        'inventory_report' => 'Rapport d\'inventaire généré avec succès',
+    ],
+    'activity_log' => [
+        'created' => 'Journal d\'activité créé avec succès',
+        'deleted' => 'Journal d\'activité supprimé avec succès',
+        'not_found' => 'Journal d\'activité non trouvé',
+        'cleared' => 'Journal d\'activité effacé avec succès',
+    ],
+    'welcome_user' => 'Bienvenue :name ! Connecté en tant que :role.'
+]; 

@@ -1,0 +1,14 @@
+RewriteEngine On
+
+# Rediriger toutes les requêtes vers le dossier public
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^(.*)$ public/$1 [L]
+
+# Empêcher l'accès direct aux dossiers sensibles
+RewriteRule ^(app|bootstrap|config|database|resources|routes|vendor)/(.*)$ - [R=403,L]
+
+# Empêcher l'accès aux fichiers .env ou autres fichiers sensibles
+<FilesMatch "^\.env|\.git|composer\.json|composer\.lock">
+    Order allow,deny
+    Deny from all
+</FilesMatch> 

@@ -1,0 +1,9 @@
+.vscode
+.env
+/vendor/
+/composer.lock
+/storage/*.log
+/storage/cache/*
+/public/storage/
+.phpunit.result.cache
+php_errors.log
