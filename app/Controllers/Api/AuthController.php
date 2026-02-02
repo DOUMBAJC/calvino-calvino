@@ -3,8 +3,8 @@
 namespace App\Controllers\Api;
 
 use Calvino\Core\Controller;
-use Calvino\Models\User;
-use Calvino\Models\UserSession;
+use App\Models\User;
+use App\Models\UserSession;
 use Calvino\Services\AuditService;
 use Calvino\Services\NotificationService;
 use Calvino\Services\GeoLocationService;

@@ -150,29 +150,74 @@ class Product extends Model
 
 ### Utiliser l'ORM
 
+L'ORM de Calvino est puissant et flexible. Vous pouvez utiliser des modèles simples ou enrichis par des **Traits** fournis par le framework.
+
+#### Modèle Simple
 ```php
-// Récupérer tous les produits
+namespace App\Models;
+
+use Calvino\Core\Model;
+
+class Product extends Model
+{
+    protected string $table = 'products';
+    protected array $fillable = ['name', 'price', 'description'];
+}
+```
+
+#### Modèle Enrichi (Traits)
+Pour bénéficier des fonctionnalités avancées du framework (Auth, Notifications, etc.), utilisez les Traits :
+
+```php
+namespace App\Models;
+
+use Calvino\Core\Model;
+use Calvino\Auth\Authenticatable; // Pour le login/JWT
+use Calvino\Traits\Notifiable;    // Pour les notifications
+
+class User extends Model
+{
+    use Authenticatable, Notifiable;
+
+    protected string $table = 'users';
+    protected array $fillable = ['name', 'email', 'password'];
+    
+    // Vous pouvez maintenant faire :
+    // $user->verifyPassword('secret');
+    // $token = $user->createToken();
+    // $user->notify('Titre', 'Message');
+}
+```
+
+#### Opérations Courantes
+```php
+// Récupérer tout
 $products = Product::all();
 
-// Trouver par ID
-$product = Product::find(1);
-
-// Créer
-$product = Product::create([
-    'name' => 'Laptop',
-    'price' => 999.99
-]);
-
-// Mettre à jour
-$product->price = 899.99;
-$product->save();
-
-// Supprimer
-$product->delete();
-
-// Requête avec conditions
+// Recherche avancée
 $products = Product::where('price', 100, '>')->get();
+
+// Création
+$user = User::create([
+    'name' => 'John Doe',
+    'email' => 'john@example.com',
+    'password' => User::hashPassword('secret')
+]);
 ```
+
+### Système de Notifications
+
+Le framework inclut un système de notifications prêt à l'emploi. Si votre modèle utilise le trait `Notifiable`, vous pouvez envoyer des notifications persistantes :
+
+```php
+$user->notify('Bienvenue !', 'Merci de votre inscription.', 'success');
+```
+
+Les notifications sont stockées dans la table `notifications` et peuvent être gérées via le `NotificationController` fourni dans le skeleton.
+
+### Gestion des Sessions et Audit
+
+Grâce aux traits `ManageSessions` et `LoggableActivity`, le framework gère automatiquement les détails techniques comme l'adresse IP, le User-Agent et la localisation géographique lors des connexions.
 
 ### Créer une Migration
 

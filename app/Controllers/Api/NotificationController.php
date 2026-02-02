@@ -5,7 +5,7 @@ namespace App\Controllers\Api;
 use Calvino\Core\Controller;
 use Calvino\Core\Request;
 use Calvino\Core\Response;
-use Calvino\Models\Notification;
+use App\Models\Notification;
 use Calvino\Core\Auth;
 
 class NotificationController extends Controller

@@ -4,8 +4,8 @@ namespace App\Controllers\Api;
 
 use Calvino\Core\Controller;
 use Calvino\Core\Request;
-use Calvino\Models\ActivityLog;
-use Calvino\Models\User;
+use App\Models\ActivityLog;
+use App\Models\User;
 
 class ActivityLogController extends Controller
 {

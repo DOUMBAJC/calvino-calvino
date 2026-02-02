@@ -4,11 +4,11 @@ namespace App\Controllers\Api;
 
 use Calvino\Core\Controller;
 use Calvino\Core\Request;
-use Calvino\Models\User;
+use App\Models\User;
 use Calvino\Services\NotificationService;
 use Calvino\Services\AuditService;
 use Calvino\Core\Auth;
-use Calvino\Models\ActivityLog;
+use App\Models\ActivityLog;
 use PDO;
 
 class UserController extends Controller

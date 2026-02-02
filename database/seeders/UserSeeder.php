@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Calvino\Models\User;
+use App\Models\User;
 
 /**
  * Seeder pour la table users

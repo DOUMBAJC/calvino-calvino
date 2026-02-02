@@ -3,6 +3,12 @@
     "description": "Squelette de projet pour le framework Calvino",
     "type": "project",
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../calvino-framework"
+        }
+    ],
     "require": {
         "php": "^8.2",
         "calvino/framework": "*"
@@ -22,7 +28,8 @@
     },
     "scripts": {
         "test": "phpunit",
-        "calvino": "php vendor/bin/calvino"
+        "calvino": "php vendor/bin/calvino",
+        "dev": "php vendor/bin/calvino serve"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
