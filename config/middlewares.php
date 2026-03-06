@@ -10,6 +10,8 @@ return [
     // Middlewares nommés qui peuvent être appliqués par route
     'route' => [
         'auth' => \Calvino\Middleware\AuthMiddleware::class,
-        'admin' => \Calvino\Middleware\AdminMiddleware::class,
+        'admin'    => \Calvino\Middleware\AdminMiddleware::class,
+        'throttle' => \App\Middleware\ThrottleMiddleware::class,
+        'locale'   => \App\Middleware\LocaleMiddleware::class,
     ],
 ]; 

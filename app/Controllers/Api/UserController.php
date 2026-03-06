@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controllers\Api;
 
 use Calvino\Core\Controller;
@@ -13,195 +15,197 @@ use PDO;
 
 class UserController extends Controller
 {
-    /**
-     * Service de notification
-     *
-     * @var NotificationService
-     */
-    protected $notificationService;
+    protected NotificationService $notificationService;
+    protected Auth $auth;
+    protected AuditService $auditService;
 
-    /**
-     * Instance Auth
-     *
-     * @var Auth
-     */
-    protected $auth;
-
-    /**
-     * Instance Audit
-     *
-     * @var AuditService
-     */
-    protected $auditService;
-
-    /**
-     * Constructeur
-     */
     public function __construct()
     {
         $this->notificationService = new NotificationService();
-        $this->auth = new Auth();
-        $this->auditService = new AuditService();
+        $this->auth                = new Auth();
+        $this->auditService        = new AuditService();
     }
 
     /**
-     * Récupère tous les utilisateurs avec leur dernière connexion
+     * Récupère tous les utilisateurs avec pagination et dernière connexion.
      *
-     * @return array
+     * Query params :
+     *   - page     (int, défaut 1)
+     *   - per_page (int, défaut 15, max 100)
+     *   - search   (string, filtre sur name/email)
+     *   - role     (string, filtre sur le rôle)
+     *   - status   (int 0|1, filtre sur is_active)
      */
     public function index(): array
     {
+        $page    = max(1, (int) request('page', 1));
+        $perPage = min(100, max(1, (int) request('per_page', 15)));
+        $search  = (string) request('search', '');
+        $role    = (string) request('role', '');
+        $status  = request('status', null);
+
         $users = User::all();
+
+        // Filtres en mémoire (compatible avec l'ORM actuel)
+        $filtered = array_filter($users, function ($user) use ($search, $role, $status) {
+            if ($search !== '' && stripos($user->name . ' ' . $user->email, $search) === false) {
+                return false;
+            }
+            if ($role !== '' && $user->role !== $role) {
+                return false;
+            }
+            if ($status !== null && (string) $user->is_active !== (string) $status) {
+                return false;
+            }
+            return true;
+        });
+
+        $filtered = array_values($filtered);
+        $total    = count($filtered);
+        $offset   = ($page - 1) * $perPage;
+        $paginated = array_slice($filtered, $offset, $perPage);
+
+        $pdo            = $this->getPdoConnection();
         $formattedUsers = [];
-        
-        $pdo = (new \Calvino\Providers\DatabaseServiceProvider(app()))->getConnection();
-        
-        foreach ($users as $user) {
-            $userId = (int)$user->id;
-            
+
+        foreach ($paginated as $user) {
+            $userId = (int) $user->id;
+
             $stmt = $pdo->prepare(
-                "SELECT created_at FROM activity_logs 
-                WHERE user_id = :user_id AND action = 'login' 
+                "SELECT created_at FROM activity_logs
+                WHERE user_id = :user_id AND action = 'login'
                 ORDER BY created_at DESC LIMIT 1"
             );
             $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
             $stmt->execute();
             $lastLogin = $stmt->fetchColumn();
-            
-            // Récupérer la date de création directement depuis la base de données
-            $stmt = $pdo->prepare("SELECT created_at FROM users WHERE id = :user_id");
+
+            $stmt = $pdo->prepare('SELECT created_at FROM users WHERE id = :user_id');
             $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
             $stmt->execute();
             $createdAt = $stmt->fetchColumn();
-            
-            // Formater les données selon le format demandé
+
             $formattedUsers[] = [
-                'id' => $userId,
-                'name' => $user->name,
-                'email' => $user->email,
-                'phone' => $user->phone,
-                'role' => $user->role,
+                'id'        => $userId,
+                'name'      => $user->name,
+                'email'     => $user->email,
+                'phone'     => $user->phone,
+                'role'      => $user->role,
                 'is_active' => boolval($user->is_active),
-                'lastLogin' => $lastLogin ?? 'Jamais connecté',
-                'created_at' => $createdAt
+                'lastLogin' => $lastLogin ?: 'Jamais connecté',
+                'created_at'=> $createdAt,
             ];
         }
-        
-        return $this->success('Liste des utilisateurs récupérée avec succès', $formattedUsers);
+
+        $data = [
+            'users'      => $formattedUsers,
+            'pagination' => [
+                'current_page' => $page,
+                'per_page'     => $perPage,
+                'total'        => $total,
+                'total_pages'  => (int) ceil($total / $perPage),
+                'from'         => $total > 0 ? $offset + 1 : 0,
+                'to'           => min($offset + $perPage, $total),
+            ],
+        ];
+
+        return $this->success('Liste des utilisateurs récupérée avec succès', $data);
     }
 
     /**
-     * Récupère un utilisateur spécifique
-     *
-     * @param Request $request
-     * @param string $id
-     * @return array
+     * Récupère un utilisateur spécifique.
      */
     public function show(Request $request, string $id): array
     {
         $userId = (int) $id;
-        $user = User::find($userId);
-        
+        $user   = User::find($userId);
+
         if (!$user) {
             return $this->error('Utilisateur non trouvé', 404);
         }
-        
-        $pdo = (new \Calvino\Providers\DatabaseServiceProvider(app()))->getConnection();
-        
-        $userId = (int)$user->id;
-        
+
+        $pdo = $this->getPdoConnection();
+
         $stmt = $pdo->prepare(
-            "SELECT created_at FROM activity_logs 
-            WHERE user_id = :user_id AND action = 'login' 
+            "SELECT created_at FROM activity_logs
+            WHERE user_id = :user_id AND action = 'login'
             ORDER BY created_at DESC LIMIT 1"
         );
         $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
         $stmt->execute();
         $lastLogin = $stmt->fetchColumn();
-        
-        // Récupérer la date de création directement depuis la base de données
-        $stmt = $pdo->prepare("SELECT created_at FROM users WHERE id = :user_id");
+
+        $stmt = $pdo->prepare('SELECT created_at FROM users WHERE id = :user_id');
         $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
         $stmt->execute();
         $createdAt = $stmt->fetchColumn();
-        
+
         $formattedUser = [
-            'id' => $userId,
-            'name' => $user->name,
-            'email' => $user->email,
-            'phone' => $user->phone,
-            'role' => $user->role,
+            'id'        => $userId,
+            'name'      => $user->name,
+            'email'     => $user->email,
+            'phone'     => $user->phone,
+            'role'      => $user->role,
             'is_active' => boolval($user->is_active),
-            'lastLogin' => $lastLogin ?? 'Jamais connecté',
-            'created_at' => $createdAt,
-        
+            'lastLogin' => $lastLogin ?: 'Jamais connecté',
+            'created_at'=> $createdAt,
         ];
-        
+
         return $this->success('Utilisateur récupéré avec succès', $formattedUser);
     }
 
     /**
-     * Crée un nouvel utilisateur
-     *
-     * @param Request $request
-     * @return array
+     * Crée un nouvel utilisateur.
      */
     public function store(Request $request): array
     {
         $errors = $this->validate([
-            'name' => 'required',
-            'email' => 'required|email',
-            'role' => 'required|in:admin,manager,pharmacist,cashier',
-            'phone' => 'required',
-            'address' => 'required'
+            'name'    => 'required',
+            'email'   => 'required|email',
+            'role'    => 'required|in:admin,manager,pharmacist,cashier',
+            'phone'   => 'required',
+            'address' => 'required',
         ]);
-        
+
         if (!empty($errors)) {
             return $this->error('Erreurs de validation', 422);
         }
-        
-        // Vérifier si l'email existe déjà
+
         $existingUser = User::findByEmail(request('email'));
         if ($existingUser) {
             return $this->error('Cet email est déjà utilisé', 422);
         }
-        
-        // Générer un mot de passe par défaut (toujours généré par le système)
+
         $randomChars = substr(str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 4);
-        $password = 'PHS' . $randomChars;
-        
-        // Créer l'utilisateur
-        $user = new User();
-        $user->name = request('name');
-        $user->email = request('email');
+        $password    = 'PHS' . $randomChars;
+
+        $user           = new User();
+        $user->name     = request('name');
+        $user->email    = request('email');
         $user->password = User::hashPassword($password);
-        $user->role = request('role');
-        $user->phone = request('phone');
-        $user->address = request('address');
+        $user->role     = request('role');
+        $user->phone    = request('phone');
+        $user->address  = request('address');
         $user->is_active = 1;
         $user->save();
-        
-        // Récupérer l'administrateur qui crée l'utilisateur
-        $currentUser = $this->auth->user();
+
+        $currentUser   = $this->auth->user();
         $currentUserId = $currentUser ? $currentUser->id : 1;
-        
-        // Journaliser l'action
+
         ActivityLog::log(
             $currentUserId,
             'user_created',
             'users',
             "Création d'un nouvel utilisateur {$user->email} avec le rôle {$user->role}"
         );
-        
-        // Envoyer une notification à l'utilisateur créé
+
         $this->notificationService->send(
             $user->id,
             'Bienvenue',
             'Bienvenue dans notre application de gestion de pharmacie. Votre mot de passe est: ' . $password,
             'info'
         );
-        
-        // Envoyer une notification à l'administrateur qui a créé l'utilisateur
+
         if ($currentUser) {
             $this->notificationService->send(
                 $currentUser->id,
@@ -210,81 +214,58 @@ class UserController extends Controller
                 'success'
             );
         }
-        
-        // Inclure le mot de passe généré dans la réponse
-        $responseData = [
-            'user' => $user,
-            'generated_password' => $password
-        ];
-        
-        return $this->success('Utilisateur créé avec succès', $responseData);
+
+        return $this->success('Utilisateur créé avec succès', [
+            'user'               => $user,
+            'generated_password' => $password,
+        ]);
     }
 
     /**
-     * Met à jour un utilisateur existant
-     *
-     * @param Request $request
-     * @param string $id
-     * @return array
+     * Met à jour un utilisateur existant.
      */
     public function update(Request $request, string $id): array
     {
         $userId = (int) $id;
-        $user = User::find($userId);
-        
+        $user   = User::find($userId);
+
         if (!$user) {
             return $this->error('Utilisateur non trouvé', 404);
         }
-        
+
         $errors = $this->validate([
-            'name' => 'required',
-            'email' => 'required|email',
-            'role' => 'required|in:admin,manager,pharmacist,cashier',
-            'phone' => 'required',
-            'address' => 'required'
+            'name'    => 'required',
+            'email'   => 'required|email',
+            'role'    => 'required|in:admin,manager,pharmacist,cashier',
+            'phone'   => 'required',
+            'address' => 'required',
         ]);
-        
+
         if (!empty($errors)) {
             return $this->error('Erreurs de validation', 422);
         }
-        
-        // Vérifier si l'email existe déjà pour un autre utilisateur
+
         $existingUser = User::findByEmail(request('email'));
         if ($existingUser && $existingUser->id !== $user->id) {
             return $this->error('Cet email est déjà utilisé', 422);
         }
-        
-        // Sauvegarder les anciennes valeurs pour l'audit
-        $oldValues = [
-            'name' => $user->name,
-            'email' => $user->email,
-            'role' => $user->role,
-            'phone' => $user->phone,
-            'address' => $user->address,
-            'is_active' => $user->is_active
-        ];
-        
-        // Mettre à jour l'utilisateur
-        $user->name = request('name');
-        $user->email = request('email');
-        $user->role = request('role');
-        $user->phone = request('phone');
+
+        $user->name    = request('name');
+        $user->email   = request('email');
+        $user->role    = request('role');
+        $user->phone   = request('phone');
         $user->address = request('address');
-        
-        // Gérer le statut actif si fourni
+
         if (request()->has('is_active')) {
-            // Convertir explicitement en entier (0 ou 1)
             $user->is_active = request('is_active') ? 1 : 0;
         }
-        
-        // Mettre à jour le mot de passe si fourni
+
         if (request('password')) {
             $user->password = User::hashPassword(request('password'));
         }
-        
+
         $user->save();
-        
-        // Journaliser l'action
+
         $currentUserId = $this->auth->user() ? $this->auth->user()->id : 0;
         ActivityLog::log(
             $currentUserId,
@@ -292,43 +273,29 @@ class UserController extends Controller
             'users',
             "Mise à jour de l'utilisateur {$user->email} (ID: {$user->id})"
         );
-        
+
         return $this->success('Utilisateur mis à jour avec succès', $user);
     }
 
     /**
-     * Supprime un utilisateur
-     *
-     * @param Request $request
-     * @param string $id
-     * @return array
+     * Supprime un utilisateur.
      */
     public function destroy(Request $request, string $id): array
     {
         $userId = (int) $id;
-        $user = User::find($userId);
-        
+        $user   = User::find($userId);
+
         if (!$user) {
             return $this->error('Utilisateur non trouvé', 404);
         }
-        
-        // Vérifier que l'utilisateur n'est pas en train de se supprimer lui-même
+
         $currentUser = $this->auth->user();
         if ($currentUser && $currentUser->id === $user->id) {
             return $this->error('Vous ne pouvez pas supprimer votre propre compte', 403);
         }
-        
-        // Sauvegarder les données de l'utilisateur avant suppression pour l'audit
-        $userData = [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'role' => $user->role
-        ];
-        
+
         $user->delete();
-        
-        // Journaliser l'action
+
         $currentUserId = $currentUser ? $currentUser->id : 0;
         ActivityLog::log(
             $currentUserId,
@@ -336,48 +303,49 @@ class UserController extends Controller
             'users',
             "Suppression de l'utilisateur {$user->email} (ID: {$user->id})"
         );
-        
+
         return $this->success('Utilisateur supprimé avec succès');
     }
 
     /**
-     * Active ou désactive un utilisateur
-     *
-     * @param Request $request
-     * @param string $id
-     * @return array
+     * Active ou désactive un utilisateur.
      */
     public function toggleStatus(Request $request, string $id): array
     {
         $userId = (int) $id;
-        $user = User::find($userId);
-        
+        $user   = User::find($userId);
+
         if (!$user) {
             return $this->error('Utilisateur non trouvé', 404);
         }
-        
-        // Vérifier que l'utilisateur n'est pas en train de se désactiver lui-même
+
         $currentUser = $this->auth->user();
         if ($currentUser && $currentUser->id === $user->id) {
             return $this->error('Vous ne pouvez pas modifier le statut de votre propre compte', 403);
         }
-        
-        $oldStatus = (int)$user->is_active;
-        // Basculer entre 0 et 1 explicitement
+
+        $oldStatus       = (int) $user->is_active;
         $user->is_active = $oldStatus ? 0 : 1;
         $user->save();
-        
-        $status = $user->is_active ? 'activé' : 'désactivé';
-        
-        // Journaliser l'action
+
+        $status        = $user->is_active ? 'activé' : 'désactivé';
         $currentUserId = $currentUser ? $currentUser->id : 0;
+
         ActivityLog::log(
             $currentUserId,
             'user_status_changed',
             'users',
-            "Statut de l'utilisateur {$user->email} modifié de {$oldStatus} à " . (int)$user->is_active
+            "Statut de l'utilisateur {$user->email} modifié de {$oldStatus} à " . (int) $user->is_active
         );
-        
+
         return $this->success("Utilisateur {$status} avec succès", $user);
+    }
+
+    /**
+     * Retourne la connexion PDO partagée.
+     */
+    private function getPdoConnection(): \PDO
+    {
+        return (new \Calvino\Providers\DatabaseServiceProvider(app()))->getConnection();
     }
 }
