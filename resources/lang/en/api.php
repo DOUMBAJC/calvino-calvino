@@ -121,4 +121,18 @@ return [
     ],
 
     'welcome_user' => 'Welcome :name! Logged in as :role.'
-]; 
+
+    'password_reset' => [
+        'sent'                  => 'If this email exists, a reset link has been sent.',
+        'invalid_token'         => 'Invalid password reset token.',
+        'token_expired'         => 'The reset token has expired. Please request a new one.',
+        'token_valid'           => 'Token is valid.',
+        'success'               => 'Password reset successfully.',
+        'confirmation_mismatch' => 'Password confirmation does not match.',
+        'no_default_password'   => 'The new password cannot be a default password.',
+        'notification_title'    => 'Password Reset',
+        'notification_body'     => 'You have requested a password reset.',
+        'success_title'         => 'Password Changed',
+        'success_body'          => 'Your password has been reset successfully.',
+    ],
+];

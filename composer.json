@@ -23,7 +23,8 @@
     "scripts": {
         "test": "phpunit",
         "calvino": "php vendor/bin/calvino",
-        "dev": "php vendor/bin/calvino serve"
+        "dev": "php vendor/bin/calvino serve",
+        "db:seed": "php vendor/bin/calvino db:seed"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

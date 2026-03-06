@@ -112,4 +112,18 @@ return [
         'cleared' => 'Journal d\'activité effacé avec succès',
     ],
     'welcome_user' => 'Bienvenue :name ! Connecté en tant que :role.'
-]; 
+
+    'password_reset' => [
+        'sent'                  => 'Si cet email existe, un lien de réinitialisation a été envoyé.',
+        'invalid_token'         => 'Token de réinitialisation invalide.',
+        'token_expired'         => 'Le token de réinitialisation a expiré. Veuillez en demander un nouveau.',
+        'token_valid'           => 'Token valide.',
+        'success'               => 'Mot de passe réinitialisé avec succès.',
+        'confirmation_mismatch' => 'La confirmation du mot de passe ne correspond pas.',
+        'no_default_password'   => 'Le nouveau mot de passe ne peut pas être un mot de passe par défaut.',
+        'notification_title'    => 'Réinitialisation de mot de passe',
+        'notification_body'     => 'Vous avez demandé une réinitialisation de mot de passe.',
+        'success_title'         => 'Mot de passe modifié',
+        'success_body'          => 'Votre mot de passe a été réinitialisé avec succès.',
+    ],
+];
