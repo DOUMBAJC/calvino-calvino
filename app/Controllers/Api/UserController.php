@@ -176,8 +176,13 @@ class UserController extends Controller
             return $this->error('Cet email est déjà utilisé', 422);
         }
 
-        $randomChars = substr(str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 4);
-        $password    = 'PHS' . $randomChars;
+        // Format PHS + 4 caractères : User::isDefaultPassword() s'en sert pour exiger le changement à la connexion.
+        // random_int et non str_shuffle, qui tire de mt_rand et se prédit.
+        $alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $password = 'PHS';
+        for ($i = 0; $i < 4; $i++) {
+            $password .= $alphabet[random_int(0, strlen($alphabet) - 1)];
+        }
 
         $user           = new User();
         $user->name     = request('name');
@@ -202,7 +207,7 @@ class UserController extends Controller
         $this->notificationService->send(
             $user->id,
             'Bienvenue',
-            'Bienvenue dans notre application de gestion de pharmacie. Votre mot de passe est: ' . $password,
+            'Votre compte est créé. Votre administrateur vous transmet votre mot de passe initial, à changer à la première connexion.',
             'info'
         );
 
@@ -210,11 +215,12 @@ class UserController extends Controller
             $this->notificationService->send(
                 $currentUser->id,
                 'Nouvel utilisateur créé',
-                'Vous avez créé un nouvel utilisateur ' . $user->name . ' (' . $user->email . '). Mot de passe généré: ' . $password,
+                'Vous avez créé un nouvel utilisateur ' . $user->name . ' (' . $user->email . ').',
                 'success'
             );
         }
 
+        // Seul endroit où le mot de passe initial apparaît en clair : il ne s'écrit ni en base ni dans une notification.
         return $this->success('Utilisateur créé avec succès', [
             'user'               => $user,
             'generated_password' => $password,
