@@ -129,7 +129,7 @@ class ThrottleMiddlewareTestable extends ThrottleMiddleware
     {
         parent::__construct($maxAttempts, $decaySeconds);
         // Rediriger vers le répertoire de test via réflexion
-        $reflection = new \ReflectionClass($this);
+        $reflection = new \ReflectionClass(ThrottleMiddleware::class);
         $prop = $reflection->getProperty('storageDir');
         $prop->setAccessible(true);
         $prop->setValue($this, $customStorageDir);
@@ -137,7 +137,7 @@ class ThrottleMiddlewareTestable extends ThrottleMiddleware
 
     public function exposeKey(string $ip): string
     {
-        $reflection = new \ReflectionClass($this);
+        $reflection = new \ReflectionClass(ThrottleMiddleware::class);
         $method = $reflection->getMethod('buildKey');
         $method->setAccessible(true);
         return $method->invoke($this, $ip);
@@ -145,7 +145,7 @@ class ThrottleMiddlewareTestable extends ThrottleMiddleware
 
     public function exposeIncrement(string $key): void
     {
-        $reflection = new \ReflectionClass($this);
+        $reflection = new \ReflectionClass(ThrottleMiddleware::class);
         $method = $reflection->getMethod('incrementAttempts');
         $method->setAccessible(true);
         $method->invoke($this, $key);
@@ -153,7 +153,7 @@ class ThrottleMiddlewareTestable extends ThrottleMiddleware
 
     public function exposeAttempts(string $key): int
     {
-        $reflection = new \ReflectionClass($this);
+        $reflection = new \ReflectionClass(ThrottleMiddleware::class);
         $method = $reflection->getMethod('getAttempts');
         $method->setAccessible(true);
         return $method->invoke($this, $key);
@@ -161,7 +161,7 @@ class ThrottleMiddlewareTestable extends ThrottleMiddleware
 
     public function exposeTooMany(string $key): bool
     {
-        $reflection = new \ReflectionClass($this);
+        $reflection = new \ReflectionClass(ThrottleMiddleware::class);
         $method = $reflection->getMethod('tooManyAttempts');
         $method->setAccessible(true);
         return $method->invoke($this, $key);
@@ -169,7 +169,7 @@ class ThrottleMiddlewareTestable extends ThrottleMiddleware
 
     public function exposeRetryAfter(string $key): int
     {
-        $reflection = new \ReflectionClass($this);
+        $reflection = new \ReflectionClass(ThrottleMiddleware::class);
         $method = $reflection->getMethod('getRetryAfter');
         $method->setAccessible(true);
         return $method->invoke($this, $key);

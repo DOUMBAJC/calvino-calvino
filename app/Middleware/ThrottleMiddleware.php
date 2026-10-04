@@ -26,10 +26,11 @@ class ThrottleMiddleware
      */
     private string $storageDir;
 
-    public function __construct(int $maxAttempts = 5, int $decaySeconds = 60)
+    public function __construct(?int $maxAttempts = null, ?int $decaySeconds = null)
     {
-        $this->maxAttempts  = (int) (env('RATE_LIMIT_MAX', $maxAttempts));
-        $this->decaySeconds = (int) (env('RATE_LIMIT_DECAY', $decaySeconds));
+        // Un argument explicite prime sur l'environnement, qui sert de défaut au middleware instancié sans argument.
+        $this->maxAttempts  = $maxAttempts ?? (int) env('RATE_LIMIT_MAX', 5);
+        $this->decaySeconds = $decaySeconds ?? (int) env('RATE_LIMIT_DECAY', 60);
         $this->storageDir   = dirname(__DIR__, 2) . '/storage/throttle';
 
         if (!is_dir($this->storageDir)) {

@@ -5,7 +5,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "calvino/framework": "*"
+        "calvino/framework": "^2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.0"
