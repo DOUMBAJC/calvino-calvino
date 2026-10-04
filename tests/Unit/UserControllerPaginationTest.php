@@ -19,8 +19,8 @@ class UserControllerPaginationTest extends TestCase
         return [
             (object) ['id' => 1, 'name' => 'Alice Admin',  'email' => 'alice@ex.com',  'role' => 'admin',       'is_active' => 1],
             (object) ['id' => 2, 'name' => 'Bob Manager',  'email' => 'bob@ex.com',    'role' => 'manager',     'is_active' => 1],
-            (object) ['id' => 3, 'name' => 'Carol Pharma', 'email' => 'carol@ex.com',  'role' => 'pharmacist',  'is_active' => 1],
-            (object) ['id' => 4, 'name' => 'Dave Cashier', 'email' => 'dave@ex.com',   'role' => 'cashier',     'is_active' => 0],
+            (object) ['id' => 3, 'name' => 'Carol User',   'email' => 'carol@ex.com',  'role' => 'user',        'is_active' => 1],
+            (object) ['id' => 4, 'name' => 'Dave User',    'email' => 'dave@ex.com',   'role' => 'user',        'is_active' => 0],
             (object) ['id' => 5, 'name' => 'Eve Admin',    'email' => 'eve@ex.com',    'role' => 'admin',       'is_active' => 1],
         ];
     }
@@ -74,7 +74,7 @@ class UserControllerPaginationTest extends TestCase
         $filtered = array_values(array_filter($users, fn($u) => (string) $u->is_active === '0'));
 
         $this->assertCount(1, $filtered);
-        $this->assertEquals('Dave Cashier', $filtered[0]->name);
+        $this->assertEquals('Dave User', $filtered[0]->name);
     }
 
     /**

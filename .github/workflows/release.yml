@@ -1,0 +1,40 @@
+name: release
+
+# Publie la version datée en tête du CHANGELOG, une fois les tests verts sur main.
+# Le tag est créé ici et non poussé à la main : une version n'existe que si sa CI est passée.
+on:
+  workflow_run:
+    workflows: [tests]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Publier la version du CHANGELOG si elle manque
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          # Seul le premier titre compte : une section « Unreleased » en tête ne publie rien.
+          version=$(grep -m1 '^## ' CHANGELOG.md | grep -oP '^## \[?\K[0-9]+\.[0-9]+\.[0-9]+' || true)
+          if [ -z "$version" ]; then
+            echo "Aucune version datée en tête du CHANGELOG : rien à publier."
+            exit 0
+          fi
+          tag="v$version"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "$tag existe déjà."
+            exit 0
+          fi
+          awk 'NR > 1 && /^## / && f { exit } f && !/^---$/ { print } /^## / && !f { f = 1 }' CHANGELOG.md > notes.md
+          gh release create "$tag" --target "$SHA" --title "$tag" --notes-file notes.md

@@ -17,7 +17,7 @@ class CreateUsersTable extends \App\Core\Migration
             $table->string('name', 255)->comment('Nom complet de l\'utilisateur');
             $table->string('email', 255)->unique()->comment('Adresse email unique');
             $table->string('password', 255)->comment('Mot de passe crypté');
-            $table->enum('role', ['admin', 'manager', 'pharmacist', 'cashier'])->default('pharmacist')->comment('Rôle de l\'utilisateur');
+            $table->enum('role', ['admin', 'manager', 'user'])->default('user')->comment('Rôle de l\'utilisateur');
             $table->string('phone', 20)->nullable()->comment('Numéro de téléphone');
             $table->text('address')->nullable()->comment('Adresse physique');
             $table->boolean('is_active')->default(1)->comment('Statut actif ou inactif');

@@ -26,13 +26,7 @@ Un mini-framework PHP moderne et léger pour créer rapidement des APIs REST ave
 
 ## 🚀 Installation
 
-### Via Composer
-
-```bash
-composer require calvino/calvino
-```
-
-### Créer un Nouveau Projet
+### Créer un nouveau projet
 
 ```bash
 composer create-project calvino/calvino mon-projet

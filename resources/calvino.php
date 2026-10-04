@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>PharmaSys by Calvino Pro</title>
+    <title>Calvino</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
@@ -104,7 +104,7 @@
 <body>
     <div class="pills" id="pills"></div>
     <div class="container">
-        <h1>PharmaSys by Calvino <span class="pro">Pro</span></h1>
+        <h1>Calvino</h1>
     </div>
     <script>
         // Create animated pills in the background

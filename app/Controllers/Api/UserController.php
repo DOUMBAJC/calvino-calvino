@@ -162,7 +162,7 @@ class UserController extends Controller
         $errors = $this->validate([
             'name'    => 'required',
             'email'   => 'required|email',
-            'role'    => 'required|in:admin,manager,pharmacist,cashier',
+            'role'    => 'required|in:admin,manager,user',
             'phone'   => 'required',
             'address' => 'required',
         ]);
@@ -242,7 +242,7 @@ class UserController extends Controller
         $errors = $this->validate([
             'name'    => 'required',
             'email'   => 'required|email',
-            'role'    => 'required|in:admin,manager,pharmacist,cashier',
+            'role'    => 'required|in:admin,manager,user',
             'phone'   => 'required',
             'address' => 'required',
         ]);

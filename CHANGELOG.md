@@ -7,7 +7,7 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 
 ---
 
-## [Unreleased]
+## [2.0.0] — 2026-10-04
 
 ### Ajouté
 - **ThrottleMiddleware** — Protection anti-brute force sur les routes publiques (`/auth/login`, `/auth/forgot-password`, `/auth/reset-password`). Configurable via `RATE_LIMIT_MAX` et `RATE_LIMIT_DECAY` dans `.env`. Retourne les en-têtes `X-RateLimit-Limit`, `X-RateLimit-Remaining` et `Retry-After` (HTTP 429).
@@ -41,6 +41,9 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 - **Route `/debug/routes`** — Sécurisée : n'est plus accessible qu'en environnement `local` ou `development` (`APP_ENV`). En production, la route n'existe simplement pas.
 - **`config/middlewares.php`** — Ajout des middlewares nommés `throttle` et `locale`.
 - **`UserController`** — Refactoring : pagination, filtres, typage strict (`declare(strict_types=1)`), méthode `getPdoConnection()` extraite.
+- **Framework 2.0** — `calvino/framework` est exigé en `^2.0` au lieu de `*` : un `composer update` ne fait plus changer de version majeure par surprise.
+- **Rôles génériques** — `admin`, `manager`, `user` remplacent les rôles de pharmacie (`pharmacist`, `cashier`). Le seeder créait déjà un `user` que la migration refusait.
+- **Template neutre** — page d'accueil, nom de base par défaut (`calvino`) et traductions débarrassés de l'application pharmacie d'origine.
 
 ### Sécurité
 - Protection brute-force sur la connexion (ThrottleMiddleware)
@@ -48,6 +51,11 @@ et ce projet adhère au [Versionnement Sémantique](https://semver.org/lang/fr/)
 - Tokens de reset de mot de passe stockés hashés (SHA-256) en base de données
 - Le token brut n'est jamais persisté — seul son hash SHA-256 est enregistré
 - Réponse identique qu'un email existe ou non (protection contre l'énumération)
+- **Mot de passe initial** — il ne s'écrit plus en clair dans la table des notifications (côté utilisateur et côté admin) ; il n'apparaît que dans la réponse à l'admin, et se tire avec `random_int` au lieu de `str_shuffle`.
+
+### Corrigé
+- **ThrottleMiddleware** — une limite passée au constructeur prime sur `RATE_LIMIT_MAX` / `RATE_LIMIT_DECAY` ; l'environnement sert de défaut.
+- **Tests** — `composer test` échouait sur une suite `Feature` sans dossier, et le test du limiteur lisait une propriété privée depuis la sous-classe.
 
 ---
 

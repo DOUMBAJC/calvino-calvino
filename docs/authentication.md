@@ -145,8 +145,7 @@ Authorization: Bearer eyJ...
 |------|-------------|-------------|
 | `admin` | Administrateur | Oui |
 | `manager` | Gestionnaire | Non |
-| `pharmacist` | Pharmacien | Non |
-| `cashier` | Caissier | Non |
+| `user` | Utilisateur | Non |
 
 ### Middlewares associés
 
